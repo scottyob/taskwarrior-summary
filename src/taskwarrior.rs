@@ -20,5 +20,5 @@ where
 }
 
 pub fn task_count(report: &String) -> usize {
-    return report.lines().count() - 2;
+    return report.lines().count() - 1;
 }
