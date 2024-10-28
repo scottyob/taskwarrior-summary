@@ -596,6 +596,7 @@ dependencies = [
  "crossterm",
  "ratatui",
  "strum",
+ "strum_macros",
 ]
 
 [[package]]
