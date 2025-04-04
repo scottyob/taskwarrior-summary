@@ -20,5 +20,9 @@ where
 }
 
 pub fn task_count(report: &String) -> usize {
-    return report.lines().count() - 1;
+    let cnt = report.lines().count();
+    if cnt > 0 {
+        return cnt - 1;
+    }
+    return cnt;
 }

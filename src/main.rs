@@ -7,6 +7,7 @@ use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture, MouseEvent, MouseEventKind},
     execute,
 };
+use clap::Parser;
 use ratatui::{
     buffer::Buffer,
     crossterm::event::{self, Event, KeyCode, KeyEventKind},
@@ -38,6 +39,14 @@ fn main() -> Result<()> {
     app_result
 }
 
+// Use clap to parse arguments and specify possible values
+#[derive(Parser)]
+struct Cli {
+    #[arg(value_enum)]
+    tab: SelectedTab,
+}
+
+
 #[derive(Default)]
 struct App {
     app_state: AppState,
@@ -65,6 +74,7 @@ enum AppState {
     PartialEq,
     Eq,
     Hash,
+    clap::ValueEnum,
 )]
 enum SelectedTab {
     #[default]
@@ -83,9 +93,11 @@ impl App {
     fn run(mut self, mut terminal: DefaultTerminal) -> Result<()> {
         self.reload_reports();
 
+        let args = Cli::parse();
+        
         while self.app_state == AppState::Running {
             self.handle_events()?;
-            let mut new_state = self.selected_tab;
+            let mut new_state = args.tab;
             terminal
                 .draw(|frame| frame.render_stateful_widget(&self, frame.area(), &mut new_state))?;
             self.selected_tab = new_state;
@@ -95,8 +107,8 @@ impl App {
     }
 
     fn handle_events(&mut self) -> std::io::Result<()> {
-        // Polls in 10 second cycles
-        let poll = event::poll(Duration::from_secs(10));
+        // Polls in 2 second cycles
+        let poll = event::poll(Duration::from_secs(2));
         if poll.is_ok() && poll.unwrap() == false {
             // 10 seconds has passed, idle reload the reports
             self.reload_reports();
